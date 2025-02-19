@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="../assets/books.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book Nest</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="Logo">
+      <h2>Book</h2>
+      <img
+        width="40"
+        height="40"
+        src="https://img.icons8.com/color/100/books.png"
+        alt="books"
+      />
+      <h2>Nest</h2>
+    </div>
+    <form id="preferenceForm">
+      <label for="genres">Genres:</label>
+      <select id="genres">
+        <option value="">Select a genre</option>
+        <option value="Dystopian">Dystopian</option>
+        <option value="Fantasy">Fantasy</option>
+        <option value="Mystery">Mystery</option>
+        <option value="Science Fiction">Science Fiction</option>
+        <option value="Romance">Romance</option>
+        <option value="Cyberpunk">Cyberpunk</option>
+        <option value="Self-Help">Self-Help</option>
+      </select>
+      <br />
+      <label>Authors:</label>
+      <input
+        type="text"
+        id="authors"
+        placeholder="e.g., J.K. Rowling, Orwell"
+      />
+      <br />
+      <button type="submit">Get Recommendations</button>
+    </form>
+
+    <hr />
+    <div id="recommendations"></div>
+
+    <script>
+      document
+        .getElementById("preferenceForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          await handleFormSubmit();
+        });
+
+      async function handleFormSubmit() {
+        try {
+          const genres = document
+            .getElementById("genres")
+            .value.split(",")
+            .map((g) => g.trim());
+          const authors = document
+            .getElementById("authors")
+            .value.split(",")
+            .map((a) => a.trim());
+
+          console.log("Genres:", genres);
+
+          const res = await fetch("http://localhost:5000/api/recommendations", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ genres, authors }),
+          });
+
+          if (!res.ok) throw new Error("Failed to fetch recommendations");
+
+          const books = await res.json();
+          console.log("Books:", books);
+
+          const recommendationsDiv = document.getElementById("recommendations");
+          recommendationsDiv.innerHTML = ""; // Clear previous results
+
+          books.forEach((book) => {
+            const bookDiv = document.createElement("div");
+            bookDiv.classList.add("book-card");
+
+            bookDiv.innerHTML = `
+              <h4>${book.title}</h4>
+              <p><strong>Author:</strong> ${book.author}</p>
+              <p><strong>Genre:</strong> ${book.genre}</p>
+            `;
+
+            recommendationsDiv.appendChild(bookDiv);
+          });
+        } catch (error) {
+          console.error("Error fetching recommendations:", error);
+          document.getElementById(
+            "recommendations"
+          ).innerHTML = `<p style="color: red;">Failed to load recommendations.</p>`;
+        }
+      }
+    </script>
+  </body>
+</html>

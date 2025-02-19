@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="../assets/books.png" />
+    <link rel="icon" href="https://img.icons8.com/color/100/books.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Book Nest</title>
     <link rel="stylesheet" href="styles.css" />
@@ -19,6 +20,10 @@
       <h2>Nest</h2>
     </div>
     <form id="preferenceForm">
+      <label>Title:</label>
+      <input type="text" id="title" placeholder="e.g., Harry Potter, 1984" />
+      <br />
+
       <label for="genres">Genres:</label>
       <select id="genres">
         <option value="">Select a genre</option>
@@ -38,6 +43,13 @@
         placeholder="e.g., J.K. Rowling, Orwell"
       />
       <br />
+
+      <!-- <label>Rating:</label>
+      <input
+        type="text"
+        id="rating"
+        placeholder="e.g., 4, 5"
+      /> -->
       <button type="submit">Get Recommendations</button>
     </form>
 
@@ -54,21 +66,33 @@
 
       async function handleFormSubmit() {
         try {
-          const genres = document
-            .getElementById("genres")
-            .value.split(",")
-            .map((g) => g.trim());
-          const authors = document
-            .getElementById("authors")
-            .value.split(",")
-            .map((a) => a.trim());
+          // Retrieve the value of the 'title' input field
+          const titleInput = document.getElementById("title").value.trim();
+          const title = titleInput ? titleInput.split(",").map((title) => title.trim()) : [];
 
+          // Retrieve the selected genre
+          const genreSelect = document.getElementById("genres");
+          const genres = genreSelect.value ? [genreSelect.value] : [];
+
+          // Retrieve the authors input and split by comma
+          const authorsInput = document.getElementById("authors").value.trim();
+          const authors = authorsInput
+            ? authorsInput.split(",").map((author) => author.trim())
+            : [];
+
+            // const ratingInput = document.getElementById("rating").value.trim();
+            // const rating = ratingInput ? ratingInput.split(",").map((rating) => rating.trim()) : [];
+
+
+          console.log("Title:", title);
           console.log("Genres:", genres);
+          console.log("Authors:", authors);
+          // console.log("Rating:", rating);
 
           const res = await fetch("http://localhost:5000/api/recommendations", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ genres, authors }),
+            body: JSON.stringify({ title, genres, authors  }),
           });
 
           if (!res.ok) throw new Error("Failed to fetch recommendations");
@@ -84,10 +108,11 @@
             bookDiv.classList.add("book-card");
 
             bookDiv.innerHTML = `
-              <h4>${book.title}</h4>
-              <p><strong>Author:</strong> ${book.author}</p>
-              <p><strong>Genre:</strong> ${book.genre}</p>
-            `;
+        <h4>${book.title}</h4>
+        <p><strong>Author:</strong> ${book.author}</p>
+        <p><strong>Genre:</strong> ${book.genre}</p>
+        <p><strong>Rating:</strong> ${book.rating} ⭐</p>
+      `;
 
             recommendationsDiv.appendChild(bookDiv);
           });

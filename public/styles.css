@@ -171,6 +171,23 @@ ul li:last-child {
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
 
+#authorSuggestions {
+    border: 1px solid #ccc;
+    max-width: 300px;
+    background: #fff;
+    position: absolute;
+    z-index: 1000;
+  }
+
+  .suggestion-item {
+    padding: 8px;
+    cursor: pointer;
+  }
+
+  .suggestion-item:hover {
+    background: #f0f0f0;
+  }
+
 /* Responsive Design */
 @media (max-width: 500px) {
   form {

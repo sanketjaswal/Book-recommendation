@@ -38,4 +38,19 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// Get unique authors based on search query
+router.get('/authors?q=', async (req, res) => {
+  try {
+    console.log("author search query:", req.query.q); // Debugging line
+    const searchQuery = req.query.q || "";
+    console.log("author search query:", searchQuery); // Debugging line
+    const authors = await Book.distinct("author", {
+      author: { $regex: searchQuery, $options: "i" } // Case-insensitive search
+    });
+    res.json(authors);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default router;
